@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-white">
-    <div class="h-full flex flex-col">
+    <div class="h-full flex flex-col md:pt-32 md:max-w-2xl md:mx-auto md:px-0">
       <!-- 拖拽区域 -->
       <div
         class="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center cursor-pointer hover:border-gray-400 transition-colors"
