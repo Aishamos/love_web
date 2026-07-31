@@ -1,15 +1,7 @@
 <template>
   <div class="bg-white h-dvh overflow-hidden">
     <div class="h-full flex flex-col">
-      <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
-        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-          <div class="text-xl tracking-widest">
-          OUR STORY
-          </div>
-          <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap">返回首页</RouterLink>
-        </div>
-      </header>
-      <div class="flex-1 flex items-center justify-center px-5">
+      <div class="flex-1 flex items-center justify-center px-5 pt-16">
         <form
           class="w-full max-w-sm"
           @submit.prevent="login"
@@ -51,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const username = ref('')

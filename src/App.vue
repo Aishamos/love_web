@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppNavbar v-if="!isUploadPage" />
+    <AppNavbar />
     <RouterView v-slot="{ Component }">
       <Transition name="page">
         <component :is="Component" />

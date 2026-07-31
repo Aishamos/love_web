@@ -19,12 +19,15 @@
           ✕
         </button>
 
-        <nav class="flex flex-col gap-6 text-xl font-light text-gray-700">
+        <nav v-if="isHome" class="flex flex-col gap-6 text-xl font-light text-gray-700">
           <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#hero')">首页</a>
           <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#albums')">相册</a>
           <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#moments')">旅行</a>
           <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#moments')">时间</a>
-          <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="goUpload">上传</a>
+          <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="goPage('/upload')">上传</a>
+        </nav>
+        <nav v-else class="flex flex-col gap-6 text-xl font-light text-gray-700">
+          <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="goPage('/')">返回首页</a>
         </nav>
       </div>
     </div>
@@ -35,20 +38,21 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-const props = defineProps<{ open: boolean }>()
+const props = defineProps<{ open: boolean; isHome: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 
 const router = useRouter()
 const panelRef = ref<HTMLElement | null>(null)
 
 function closeAndScroll(hash: string) {
+  emit('close')
   const el = document.querySelector(hash)
   if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 
-function goUpload() {
+function goPage(path: string) {
   emit('close')
-  router.push('/upload')
+  router.push(path)
 }
 
 watch(() => props.open, (val) => {

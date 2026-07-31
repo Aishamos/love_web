@@ -1,19 +1,6 @@
 <template>
   <div class="min-h-screen bg-white">
     <div class="h-full flex flex-col">
-      <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
-        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-          <div class="text-xl tracking-widest">
-          UPLOAD
-          </div>
-          <button
-           class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap"
-           @click="goHome"
-          >
-            返回首页
-          </button>
-        </div>
-      </header>
       <!-- 拖拽区域 -->
       <div
         class="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center cursor-pointer hover:border-gray-400 transition-colors"
@@ -167,10 +154,6 @@ onMounted(async () => {
     if (j.code === 0) albums.value = j.data
   } catch {}
 })
-
-function goHome() {
-  router.push('/')
-}
 
 function handleDrop(e: DragEvent) {
   dragging.value = false
