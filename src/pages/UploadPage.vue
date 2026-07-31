@@ -3,14 +3,16 @@
     <!-- 登录表单 -->
     <div
       v-if="!authed"
-      class="min-h-screen px-5"
+      class="min-h-screen flex flex-col"
     >
-      <div class="max-w-3xl mx-auto py-6 flex justify-between items-center">
-        <div class="text-xl tracking-widest">OUR GALLERY</div>
-        <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors">返回首页</RouterLink>
+      <div class="px-5">
+        <div class="max-w-3xl mx-auto py-6 flex justify-between items-center">
+          <div class="text-xl tracking-widest">OUR GALLERY</div>
+          <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors">返回首页</RouterLink>
+        </div>
       </div>
 
-      <div class="flex items-center justify-center" style="height: calc(100vh - 100px)">
+      <div class="flex-1 flex items-center justify-center px-5">
         <form
           class="w-full max-w-sm"
           @submit.prevent="login"
