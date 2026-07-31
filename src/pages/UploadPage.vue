@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="bg-white" :class="authed ? 'min-h-screen' : 'h-dvh overflow-hidden'">
     <!-- 登录表单 -->
     <div
       v-if="!authed"
-      class="min-h-dvh flex flex-col"
+      class="h-full flex flex-col"
     >
       <div class="px-5">
         <div class="max-w-3xl mx-auto py-6 flex justify-between items-center">
