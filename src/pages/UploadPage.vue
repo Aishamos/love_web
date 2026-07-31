@@ -1,72 +1,6 @@
 <template>
-  <div class="bg-white" :class="authed ? 'min-h-screen' : 'h-dvh overflow-hidden'">
-    <!-- 登录表单 -->
-    <div
-      v-if="!authed"
-      class="h-full flex flex-col"
-    >
-      <!-- <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center gap-6">
-        <div class="text-xl tracking-widest whitespace-nowrap">OUR STORY</div>
-        <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap">返回首页</RouterLink>
-      </div> -->
-      <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
-        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-          <div class="text-xl tracking-widest">
-          OUR STORY
-          </div>
-		  <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap">返回首页</RouterLink>
-        </div>
-      </header>
-      <div class="flex-1 flex items-center justify-center px-5">
-        <form
-          class="w-full max-w-sm"
-          @submit.prevent="login"
-        >
-          <div class="text-center mb-12">
-            <div class="text-sm text-gray-400">身份验证</div>
-          </div>
-
-        <div v-if="loginError" class="text-red-500 text-sm text-center mb-6">
-          {{ loginError }}
-        </div>
-
-        <input
-          v-model="username"
-          type="text"
-          placeholder="账号"
-          class="w-full border border-gray-200 rounded-xl px-4 py-3 mb-4 text-sm focus:outline-none focus:border-gray-400 transition-colors"
-          autocomplete="username"
-        />
-        <input
-          v-model="password"
-          type="password"
-          placeholder="密码"
-          class="w-full border border-gray-200 rounded-xl px-4 py-3 mb-6 text-sm focus:outline-none focus:border-gray-400 transition-colors"
-          autocomplete="current-password"
-        />
-          <button
-            type="submit"
-            :disabled="loading"
-            class="w-full bg-gray-900 text-white rounded-xl py-3 text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
-          >
-            {{ loading ? '验证中...' : '登录' }}
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- 上传界面 -->
-    <div v-else class="h-full flex flex-col">
-      <!-- 顶栏 -->
-      <!-- <div class="flex justify-between items-center mb-12 gap-6">
-        <div class="text-xl tracking-widest whitespace-nowrap">OUR STORY</div>
-        <button
-          class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap"
-          @click="goHome"
-        >
-          返回首页
-        </button>
-      </div> -->
+  <div class="min-h-screen bg-white">
+    <div class="h-full flex flex-col">
       <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
         <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
           <div class="text-xl tracking-widest">
@@ -193,14 +127,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import type { Album } from '@/types'
-
-const authed = ref(false)
-const username = ref('')
-const password = ref('')
-const loading = ref(false)
-const loginError = ref('')
 
 const files = ref<File[]>([])
 const previews = ref<{ url: string; file: File }[]>([])
@@ -218,50 +146,27 @@ const progress = ref(0)
 const uploadMsg = ref('')
 const uploadOk = ref(false)
 
+const router = useRouter()
+
 onMounted(async () => {
   const res = await fetch('/api/auth/check', { credentials: 'same-origin' })
   if (res.ok) {
     const json = await res.json()
-    authed.value = json.code === 0
-  }
-  if (authed.value) {
-    try {
-      const r = await fetch('/api/albums')
-      const j = await r.json()
-      if (j.code === 0) albums.value = j.data
-    } catch {}
-  }
-})
-
-async function login() {
-  if (!username.value || !password.value) {
-    loginError.value = '请输入账号和密码'
+    if (json.code !== 0) {
+      router.replace('/login')
+      return
+    }
+  } else {
+    router.replace('/login')
     return
   }
-  loading.value = true
-  loginError.value = ''
-
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin',
-    body: JSON.stringify({ username: username.value, password: password.value }),
-  })
-
-  if (res.ok) {
-    authed.value = true
-    try {
-      const r = await fetch('/api/albums')
-      const j = await r.json()
-      if (j.code === 0) albums.value = j.data
-    } catch {}
-  } else {
-    loginError.value = '账号或密码错误'
-  }
-  loading.value = false
-}
-
-const router = useRouter()
+  // 已登录，加载相册列表
+  try {
+    const r = await fetch('/api/albums')
+    const j = await r.json()
+    if (j.code === 0) albums.value = j.data
+  } catch {}
+})
 
 function goHome() {
   router.push('/')
@@ -328,8 +233,7 @@ async function doUpload() {
     if (json.code === 0) {
       setTimeout(() => clearAll(), 1500)
     } else if (res.status === 401) {
-      // session 过期
-      authed.value = false
+      router.replace('/login')
       clearAll()
     }
   } catch {

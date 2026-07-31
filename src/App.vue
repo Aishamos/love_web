@@ -19,7 +19,7 @@ import AppFooter from '@/components/layout/AppFooter.vue'
 import PhotoViewer from '@/components/viewer/PhotoViewer.vue'
 
 const route = useRoute()
-const isUploadPage = computed(() => route.path === '/upload')
+const isUploadPage = computed(() => route.path === '/upload' || route.path === '/login')
 </script>
 
 <style>

@@ -2,7 +2,7 @@
   <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
     <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
       <div class="text-xl tracking-widest">
-        OUR GALLERY
+        OUR STORY
       </div>
 
       <nav class="hidden md:flex gap-10 text-sm text-gray-500">

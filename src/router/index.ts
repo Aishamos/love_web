@@ -13,6 +13,11 @@ const router = createRouter({
       name: 'upload',
       component: () => import('@/pages/UploadPage.vue'),
     },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/pages/LoginPage.vue'),
+    },
   ],
   scrollBehavior(to) {
     if (to.hash) {
