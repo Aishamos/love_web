@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(python -c ' *)",
+      "Bash(python3 -c \"import zipfile; z=zipfile.ZipFile\\('背景：.docx'\\); print\\(z.namelist\\(\\)\\)\")",
+      "Bash(/c/Windows/py.exe -c \"import zipfile; z=zipfile.ZipFile\\('背景：.docx'\\); [print\\(t.text,end=''\\) if t.text else None for t in __import__\\('xml.etree.ElementTree'\\).fromstring\\(z.read\\('word/document.xml'\\)\\).iter\\('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t'\\)]\")",
+      "Bash(/c/Users/25624/AppData/Local/Microsoft/WindowsApps/python3 -c \"import zipfile;z=zipfile.ZipFile\\('背景：.docx'\\);print\\(z.namelist\\(\\)\\)\")",
+      "Bash(cp \"背景：.docx\" /tmp/bg.docx)",
+      "Bash(unzip -p \"背景：.docx\" word/document.xml)",
+      "Bash(sed 's/<[^>]*>//g')"
+    ]
+  }
+}

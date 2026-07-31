@@ -1,0 +1,12 @@
+[Unit]
+Description=LOVE Web Flask Backend
+After=network.target mysql.service
+
+[Service]
+User=root
+WorkingDirectory=/var/www/love_web/backend
+ExecStart=/var/www/love_web/backend/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 wsgi:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
