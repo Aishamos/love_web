@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white h-dvh overflow-hidden">
     <div class="h-full flex flex-col">
-      <div class="flex-1 flex items-center justify-center px-5 pt-16 md:pt-32">
+      <div class="flex-1 flex items-center justify-center px-5 pt-16 md:pt-48">
         <form
           class="w-full max-w-sm"
           @submit.prevent="login"
