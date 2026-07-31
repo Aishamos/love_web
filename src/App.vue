@@ -2,7 +2,7 @@
   <div>
     <AppNavbar v-if="!isUploadPage" />
     <RouterView v-slot="{ Component }">
-      <Transition name="page" mode="out-in">
+      <Transition name="page">
         <component :is="Component" />
       </Transition>
     </RouterView>
