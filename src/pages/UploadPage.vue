@@ -5,11 +5,9 @@
       v-if="!authed"
       class="h-full flex flex-col"
     >
-      <div class="px-5">
-        <div class="max-w-3xl mx-auto py-6 flex justify-between items-center">
-          <div class="text-xl tracking-widest">OUR GALLERY</div>
-          <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors">返回首页</RouterLink>
-        </div>
+      <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+        <div class="text-xl tracking-widest">OUR GALLERY</div>
+        <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors">返回首页</RouterLink>
       </div>
 
       <div class="flex-1 flex items-center justify-center px-5">
@@ -51,10 +49,10 @@
     </div>
 
     <!-- 上传界面 -->
-    <div v-else class="max-w-3xl mx-auto px-6 py-12">
+    <div v-else class="max-w-7xl mx-auto px-6 py-5">
       <!-- 顶栏 -->
       <div class="flex justify-between items-center mb-12">
-        <div class="text-xl tracking-widest">UPLOAD</div>
+        <div class="text-xl tracking-widest">OUR GALLERY</div>
         <button
           class="text-sm text-gray-400 hover:text-gray-700 transition-colors"
           @click="goHome"
