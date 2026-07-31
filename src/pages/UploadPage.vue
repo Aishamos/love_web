@@ -6,13 +6,13 @@
       class="h-full flex flex-col"
     >
       <!-- <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center gap-6">
-        <div class="text-xl tracking-widest whitespace-nowrap">OUR GALLERY</div>
+        <div class="text-xl tracking-widest whitespace-nowrap">OUR STORY</div>
         <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap">返回首页</RouterLink>
       </div> -->
       <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
         <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
           <div class="text-xl tracking-widest">
-          OUR GALLERY
+          OUR STORY
           </div>
 		  <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap">返回首页</RouterLink>
         </div>
@@ -58,16 +58,28 @@
     <!-- 上传界面 -->
     <div v-else class="max-w-7xl mx-auto px-6 py-5">
       <!-- 顶栏 -->
-      <div class="flex justify-between items-center mb-12 gap-6">
-        <div class="text-xl tracking-widest whitespace-nowrap">OUR GALLERY</div>
+      <!-- <div class="flex justify-between items-center mb-12 gap-6">
+        <div class="text-xl tracking-widest whitespace-nowrap">OUR STORY</div>
         <button
           class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap"
           @click="goHome"
         >
           返回首页
         </button>
-      </div>
-
+      </div> -->
+      <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <div class="text-xl tracking-widest">
+          OUR STORY
+          </div>
+          <button
+           class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap"
+           @click="goHome"
+          >
+            返回首页
+          </button>
+        </div>
+      </header>
       <!-- 拖拽区域 -->
       <div
         class="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center cursor-pointer hover:border-gray-400 transition-colors"
