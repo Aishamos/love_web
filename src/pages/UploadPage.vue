@@ -56,7 +56,7 @@
     </div>
 
     <!-- 上传界面 -->
-    <div v-else class="max-w-7xl mx-auto px-6 py-5">
+    <div v-else class="h-full flex flex-col">
       <!-- 顶栏 -->
       <!-- <div class="flex justify-between items-center mb-12 gap-6">
         <div class="text-xl tracking-widest whitespace-nowrap">OUR STORY</div>
@@ -70,7 +70,7 @@
       <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
         <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
           <div class="text-xl tracking-widest">
-          OUR STORY
+          UPLOAD
           </div>
           <button
            class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap"
