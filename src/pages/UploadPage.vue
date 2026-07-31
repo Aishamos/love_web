@@ -3,16 +3,21 @@
     <!-- 登录表单 -->
     <div
       v-if="!authed"
-      class="flex items-center justify-center min-h-screen px-5"
+      class="min-h-screen px-5"
     >
-      <form
-        class="w-full max-w-sm"
-        @submit.prevent="login"
-      >
-        <div class="text-center mb-12">
-          <div class="text-xl tracking-widest mb-2">OUR GALLERY</div>
-          <div class="text-sm text-gray-400">身份验证</div>
-        </div>
+      <div class="max-w-3xl mx-auto py-6 flex justify-between items-center">
+        <div class="text-xl tracking-widest">OUR GALLERY</div>
+        <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors">返回首页</RouterLink>
+      </div>
+
+      <div class="flex items-center justify-center" style="height: calc(100vh - 100px)">
+        <form
+          class="w-full max-w-sm"
+          @submit.prevent="login"
+        >
+          <div class="text-center mb-12">
+            <div class="text-sm text-gray-400">身份验证</div>
+          </div>
 
         <div v-if="loginError" class="text-red-500 text-sm text-center mb-6">
           {{ loginError }}
@@ -32,14 +37,15 @@
           class="w-full border border-gray-200 rounded-xl px-4 py-3 mb-6 text-sm focus:outline-none focus:border-gray-400 transition-colors"
           autocomplete="current-password"
         />
-        <button
-          type="submit"
-          :disabled="loading"
-          class="w-full bg-gray-900 text-white rounded-xl py-3 text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
-        >
-          {{ loading ? '验证中...' : '登录' }}
-        </button>
-      </form>
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full bg-gray-900 text-white rounded-xl py-3 text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
+          >
+            {{ loading ? '验证中...' : '登录' }}
+          </button>
+        </form>
+      </div>
     </div>
 
     <!-- 上传界面 -->
@@ -49,9 +55,9 @@
         <div class="text-xl tracking-widest">UPLOAD</div>
         <button
           class="text-sm text-gray-400 hover:text-gray-700 transition-colors"
-          @click="logout"
+          @click="goHome"
         >
-          退出
+          返回首页
         </button>
       </div>
 
@@ -168,6 +174,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
 import type { Album } from '@/types'
 
 const authed = ref(false)
@@ -235,11 +242,10 @@ async function login() {
   loading.value = false
 }
 
-async function logout() {
-  await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' })
-  authed.value = false
-  files.value = []
-  previews.value = []
+const router = useRouter()
+
+function goHome() {
+  router.push('/')
 }
 
 function handleDrop(e: DragEvent) {
