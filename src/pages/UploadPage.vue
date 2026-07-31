@@ -5,7 +5,7 @@
       v-if="!authed"
       class="h-full flex flex-col"
     >
-      <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+      <div class="max-w-7xl mx-auto px-6 py-5 mb-6 flex justify-between items-center">
         <div class="text-xl tracking-widest">OUR GALLERY</div>
         <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors">返回首页</RouterLink>
       </div>
