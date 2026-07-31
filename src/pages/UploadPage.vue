@@ -5,11 +5,18 @@
       v-if="!authed"
       class="h-full flex flex-col"
     >
-      <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center gap-6">
+      <!-- <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center gap-6">
         <div class="text-xl tracking-widest whitespace-nowrap">OUR GALLERY</div>
         <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap">返回首页</RouterLink>
-      </div>
-
+      </div> -->
+      <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <div class="text-xl tracking-widest">
+          OUR GALLERY
+          </div>
+		  <RouterLink to="/" class="text-sm text-gray-400 hover:text-gray-700 transition-colors whitespace-nowrap">返回首页</RouterLink>
+        </div>
+      </header>
       <div class="flex-1 flex items-center justify-center px-5">
         <form
           class="w-full max-w-sm"
