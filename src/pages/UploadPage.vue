@@ -3,7 +3,7 @@
     <!-- 登录表单 -->
     <div
       v-if="!authed"
-      class="min-h-screen flex flex-col"
+      class="min-h-dvh flex flex-col"
     >
       <div class="px-5">
         <div class="max-w-3xl mx-auto py-6 flex justify-between items-center">
