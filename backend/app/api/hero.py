@@ -12,7 +12,7 @@ def get_hero():
             'message': 'ok',
             'data': {
                 'imageUrl': f'/static/uploads/{latest.filename}',
-                'title': latest.region or 'Gallery',
+                'title': latest.region or '',
                 'subtitle': latest.photo_date or '',
             }
         })

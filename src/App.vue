@@ -1,22 +1,27 @@
 <template>
-  <div class="min-h-dvh flex flex-col">
+  <div class="min-h-dvh grid grid-rows-[1fr_auto]">
     <AppNavbar />
-    <div class="flex-1 flex flex-col">
+    <div class="flex flex-col">
       <RouterView v-slot="{ Component }">
         <Transition name="page">
           <component :is="Component" />
         </Transition>
       </RouterView>
     </div>
-    <AppFooter />
+    <AppFooter v-if="!isUploadPage" />
     <PhotoViewer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import PhotoViewer from '@/components/viewer/PhotoViewer.vue'
+
+const route = useRoute()
+const isUploadPage = computed(() => route.path === '/upload' || route.path === '/login')
 </script>
 
 <style>
