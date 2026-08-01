@@ -1,13 +1,13 @@
 <template>
   <div class="bg-white h-dvh overflow-hidden">
     <div class="h-full flex flex-col">
-      <div class="flex-1 flex items-center justify-center px-5 pt-16 md:pt-24">
+      <div class="flex-1 flex items-start justify-center px-5 pt-32 md:pt-64">
         <form
-          class="w-full max-w-sm md:pt-24"
+          class="w-full max-w-sm "
           @submit.prevent="login"
         >
-          <div class="text-center mb-12">
-            <div class="text-sm text-gray-400">身份验证</div>
+          <div class="text-center mb-4">
+            <div class="text-sm text-gray-400">宝宝 请登录</div>
           </div>
 
         <div v-if="loginError" class="text-red-500 text-sm text-center mb-6">
