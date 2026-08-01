@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="bg-white flex-1">
     <div class="h-full flex flex-col md:pt-32 md:max-w-2xl md:mx-auto md:px-0 pt-24  px-6">
       <!-- 拖拽区域 -->
       <div

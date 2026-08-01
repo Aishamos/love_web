@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white h-dvh overflow-hidden">
+  <div class="bg-white flex-1 flex flex-col overflow-hidden">
     <div class="h-full flex flex-col">
       <div class="flex-1 flex items-start justify-center px-5 pt-32 md:pt-64">
         <form
