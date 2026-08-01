@@ -3,7 +3,7 @@
     <div class="h-full flex flex-col">
       <div class="flex-1 flex items-center justify-center px-5 pt-16 md:pt-24">
         <form
-          class="w-full max-w-sm"
+          class="w-full max-w-sm md:pt-24"
           @submit.prevent="login"
         >
           <div class="text-center mb-12">
