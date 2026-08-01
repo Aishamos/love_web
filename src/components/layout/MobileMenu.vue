@@ -3,11 +3,9 @@
     <Transition name="menu">
       <div
         v-if="open"
-        class="fixed inset-0 z-[100]"
+        class="fixed inset-0 z-[100] bg-black/40"
         @click.self="$emit('close')"
       >
-        <div class="absolute inset-0 bg-black/40" />
-
         <div class="mobile-menu-panel absolute top-0 right-0 h-full w-[150px] bg-white shadow-xl flex flex-col p-8 pt-20">
           <button
             class="absolute top-6 right-6 text-2xl text-gray-400 hover:text-gray-900 transition-colors"
