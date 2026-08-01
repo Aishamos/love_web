@@ -1,45 +1,43 @@
 <template>
   <div class="bg-white flex-1">
     <div class="h-full flex flex-col md:pt-32 md:max-w-2xl md:mx-auto md:px-0 pt-24  px-6">
-      <!-- 拖拽区域 -->
+      <!-- 上传/预览区：未选图显示提示框，选图后图片覆盖此框 -->
       <div
-        class="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center cursor-pointer hover:border-gray-400 transition-colors"
+        class="group border-2 border-dashed border-gray-200 rounded-3xl overflow-hidden cursor-pointer hover:border-gray-400 transition-colors"
         :class="{ 'border-gray-900 bg-gray-50': dragging }"
         @dragover.prevent="dragging = true"
         @dragleave="dragging = false"
         @drop.prevent="handleDrop"
         @click="fileInput?.click()"
       >
-        <div class="text-4xl mb-4 text-gray-300">+</div>
-        <div class="text-sm text-gray-400">拖拽图片到此处，或点击选择</div>
-        <div class="text-xs text-gray-300 mt-2">支持 JPG / PNG / WebP</div>
+        <div v-if="!previews.length" class="p-12 text-center">
+          <div class="text-4xl mb-4 text-gray-300">+</div>
+          <div class="text-sm text-gray-400">拖拽单张图片到此处，或点击选择</div>
+          <div class="text-xs text-gray-300 mt-2">支持 JPG / PNG / WebP</div>
+        </div>
+
+        <div v-else class="relative aspect-square">
+          <img :src="previews[0].url" class="w-full h-full object-cover" />
+          <button
+            class="absolute top-3 right-3 w-8 h-8 bg-black/60 rounded-full text-white text-sm transition-opacity"
+            @click.stop="removePreview(0)"
+            aria-label="移除"
+          >
+            ✕
+          </button>
+          <div class="absolute bottom-3 inset-x-0 text-center text-white text-xs bg-black/40 py-1.5">
+            点击更换图片
+          </div>
+        </div>
       </div>
 
       <input
         ref="fileInput"
         type="file"
-        multiple
         accept="image/jpeg,image/png,image/webp"
         class="hidden"
         @change="handleFiles"
       />
-
-      <!-- 预览 -->
-      <div v-if="previews.length" class="grid grid-cols-3 md:grid-cols-4 gap-3 mt-8">
-        <div
-          v-for="(p, i) in previews"
-          :key="i"
-          class="relative rounded-2xl overflow-hidden aspect-square group"
-        >
-          <img :src="p.url" class="w-full h-full object-cover" />
-          <button
-            class="absolute top-2 right-2 w-6 h-6 bg-black/50 rounded-full text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-            @click.stop="removePreview(i)"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
 
       <!-- 元数据表单 -->
       <div v-if="previews.length" class="mt-10 space-y-6">
@@ -71,7 +69,7 @@
             <input
               v-model="photoDate"
               type="text"
-              placeholder="如 2025.03"
+              placeholder="如 2025.03.14"
               class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 transition-colors"
             />
           </div>
@@ -94,7 +92,7 @@
             class="flex-1 bg-gray-900 text-white rounded-xl py-3 text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
             @click="doUpload"
           >
-            {{ uploading ? `上传中 ${progress}%` : `上传 ${files.length} 张图片` }}
+            {{ uploading ? `上传中 ${progress}%` : '上传图片' }}
           </button>
           <button
             class="px-6 border border-gray-200 rounded-xl py-3 text-sm text-gray-500 hover:border-gray-400 transition-colors"
@@ -116,6 +114,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { parse as parseExif } from 'exifr'
 import type { Album } from '@/types'
 
 const { setLoggedIn } = useAuth()
@@ -173,8 +172,27 @@ function addFiles(fileList: FileList) {
   for (let i = 0; i < fileList.length; i++) {
     const f = fileList[i]
     if (!f.type.startsWith('image/')) continue
+    // 单图模式：替换已有选择，并清空上一张的元数据
+    clearAll()
     files.value.push(f)
     previews.value.push({ url: URL.createObjectURL(f), file: f })
+    fillDateFromExif(f)
+    break
+  }
+}
+
+async function fillDateFromExif(file: File) {
+  try {
+    const exif = await parseExif(file, { pick: ['DateTimeOriginal'] })
+    const d = exif?.DateTimeOriginal
+    if (d instanceof Date && !isNaN(d.getTime())) {
+      const y = d.getFullYear()
+      const m = String(d.getMonth() + 1).padStart(2, '0')
+      const day = String(d.getDate()).padStart(2, '0')
+      if (!photoDate.value) photoDate.value = `${y}.${m}.${day}`
+    }
+  } catch {
+    // 无 EXIF 或解析失败，保持手动填写
   }
 }
 
@@ -188,6 +206,10 @@ function clearAll() {
   previews.value.forEach(p => URL.revokeObjectURL(p.url))
   previews.value = []
   files.value = []
+  season.value = ''
+  region.value = ''
+  photoDate.value = ''
+  albumId.value = ''
   uploadMsg.value = ''
 }
 
