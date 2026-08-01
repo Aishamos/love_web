@@ -44,8 +44,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
+const { setLoggedIn } = useAuth()
 const username = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -67,6 +69,7 @@ async function login() {
   })
 
   if (res.ok) {
+    setLoggedIn(true)
     router.push('/upload')
   } else {
     loginError.value = '账号或密码错误'

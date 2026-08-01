@@ -115,7 +115,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 import type { Album } from '@/types'
+
+const { setLoggedIn } = useAuth()
 
 const files = ref<File[]>([])
 const previews = ref<{ url: string; file: File }[]>([])
@@ -216,6 +219,7 @@ async function doUpload() {
     if (json.code === 0) {
       setTimeout(() => clearAll(), 1500)
     } else if (res.status === 401) {
+      setLoggedIn(false)
       router.replace('/login')
       clearAll()
     }

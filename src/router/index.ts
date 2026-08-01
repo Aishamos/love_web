@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { checkAuth } from '@/composables/useAuth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,6 +26,13 @@ const router = createRouter({
     }
     return { top: 0 }
   },
+})
+
+router.beforeEach(async (to) => {
+  if (to.path === '/upload') {
+    const ok = await checkAuth()
+    if (!ok) return { path: '/login' }
+  }
 })
 
 export default router
