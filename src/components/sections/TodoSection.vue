@@ -81,8 +81,8 @@ const todos = ref<Todo[]>([])
 const newContent = ref('')
 const adding = ref(false)
 
-const pending = computed(() => todos.value.filter(t => !t.done))
-const completed = computed(() => todos.value.filter(t => t.done))
+const pending = computed(() => todos.value.filter(t => !t.done).slice(0, 5))
+const completed = computed(() => todos.value.filter(t => t.done).slice(0, 5))
 
 const headerRef = ref<HTMLElement | null>(null)
 useFadeUpOnScroll(headerRef)
