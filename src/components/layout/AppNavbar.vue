@@ -1,8 +1,13 @@
 <template>
   <header class="fixed top-0 w-full bg-white/80 backdrop-blur z-50">
     <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-      <div class="text-xl tracking-widest">
-        OUR STORY
+      <div class="flex items-baseline gap-3">
+        <div class="text-xl tracking-widest">
+          OUR STORY
+        </div>
+        <span v-if="isHome" class="hidden md:inline text-xs text-gray-400">
+          在一起 {{ togetherText }} · 纪念日还有 {{ daysToAnniversary }}天
+        </span>
       </div>
 
       <nav v-if="isHome" class="hidden md:flex gap-10 text-sm text-gray-500">
@@ -26,8 +31,10 @@
 import { ref, computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import MobileMenu from './MobileMenu.vue'
+import { useAnniversary } from '@/composables/useAnniversary'
 
 const route = useRoute()
 const mobileOpen = ref(false)
 const isHome = computed(() => route.path === '/')
+const { togetherText, daysToAnniversary } = useAnniversary()
 </script>
