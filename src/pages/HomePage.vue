@@ -12,7 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 import HeroSection from '@/components/sections/HeroSection.vue'
 import LatestSection from '@/components/sections/LatestSection.vue'
@@ -24,6 +25,7 @@ import { usePhotoViewer } from '@/composables/usePhotoViewer'
 import { useAnniversary } from '@/composables/useAnniversary'
 import type { Photo, Album, HeroContent } from '@/types'
 
+const route = useRoute()
 const { open } = usePhotoViewer()
 const { togetherText, daysToAnniversary } = useAnniversary()
 
@@ -52,6 +54,15 @@ onMounted(async () => {
     albums.value = apiAlbums
   } catch {
     // API 不可用，保持空状态
+  }
+  // 刷新/首次加载时按 URL hash 定位区块（弥补首次导航 scrollBehavior 不可靠）
+  if (route.hash) {
+    await nextTick()
+    const el = document.querySelector(route.hash)
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 96
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
   }
 })
 </script>
