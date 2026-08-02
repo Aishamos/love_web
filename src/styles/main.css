@@ -8,6 +8,10 @@ html {
   overflow-y: scroll;
 }
 
+section[id] {
+  scroll-margin-top: 96px;
+}
+
 body {
   font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   -webkit-font-smoothing: antialiased;

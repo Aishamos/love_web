@@ -22,7 +22,12 @@ const router = createRouter({
   ],
   scrollBehavior(to) {
     if (to.hash) {
-      return { el: to.hash, behavior: 'smooth' }
+      const el = document.querySelector(to.hash)
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 96
+        return { top, behavior: 'smooth' }
+      }
+      return { top: 0 }
     }
     return { top: 0 }
   },
