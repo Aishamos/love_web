@@ -113,7 +113,7 @@ async function loadTodos() {
 
 async function ensureLogin(): Promise<boolean> {
   if (await checkAuth()) return true
-  router.push('/login')
+  router.push({ path: '/login', query: { redirect: '/', anchor: 'todo' } })
   return false
 }
 

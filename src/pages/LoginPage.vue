@@ -43,10 +43,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
+const route = useRoute()
 const { setLoggedIn } = useAuth()
 const username = ref('')
 const password = ref('')
@@ -70,7 +71,15 @@ async function login() {
 
   if (res.ok) {
     setLoggedIn(true)
-    router.push('/upload')
+    const redirect = typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
+      ? route.query.redirect
+      : '/upload'
+    const anchor = typeof route.query.anchor === 'string' ? route.query.anchor : ''
+    if (anchor) {
+      router.push({ path: redirect, hash: `#${anchor}` })
+    } else {
+      router.push(redirect)
+    }
   } else {
     loginError.value = '账号或密码错误'
   }

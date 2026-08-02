@@ -256,7 +256,7 @@ function doUpload() {
       setTimeout(() => clearAll(), 800)
     } else if (xhr.status === 401) {
       setLoggedIn(false)
-      router.replace('/login')
+      router.replace({ path: '/login', query: { redirect: '/upload' } })
       clearAll()
     } else {
       showToast(json.message, 'error', 4000)

@@ -36,7 +36,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   if (to.path === '/upload') {
     const ok = await checkAuth()
-    if (!ok) return { path: '/login' }
+    if (!ok) return { path: '/login', query: { redirect: to.fullPath } }
   }
 })
 
