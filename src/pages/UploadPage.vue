@@ -51,20 +51,7 @@
 
       <!-- 元数据表单 -->
       <div v-if="previews.length" class="mt-10 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div>
-            <label class="block text-xs text-gray-400 mb-2">季节</label>
-            <select
-              v-model="season"
-              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 transition-colors bg-white"
-            >
-              <option value="">选择季节</option>
-              <option value="spring">春</option>
-              <option value="summer">夏</option>
-              <option value="autumn">秋</option>
-              <option value="winter">冬</option>
-            </select>
-          </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label class="block text-xs text-gray-400 mb-2">地区</label>
             <input
@@ -83,6 +70,16 @@
               class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 transition-colors"
             />
           </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-2">备注</label>
+          <input
+            v-model="remark"
+            type="text"
+            placeholder="备注，如拍摄故事/地点细节"
+            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+          />
         </div>
 
         <div>
@@ -135,7 +132,7 @@ const dragging = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 let exifSeq = 0
 
-const season = ref('')
+const remark = ref('')
 const region = ref('')
 const photoDate = ref('')
 const albumId = ref('')
@@ -221,7 +218,7 @@ function clearAll() {
   previews.value.forEach(p => URL.revokeObjectURL(p.url))
   previews.value = []
   files.value = []
-  season.value = ''
+  remark.value = ''
   region.value = ''
   photoDate.value = ''
   albumId.value = ''
@@ -234,7 +231,7 @@ function doUpload() {
 
   const formData = new FormData()
   files.value.forEach(f => formData.append('files', f))
-  formData.append('season', season.value)
+  formData.append('remark', remark.value)
   formData.append('region', region.value)
   formData.append('photoDate', photoDate.value)
   formData.append('albumId', albumId.value)

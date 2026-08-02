@@ -19,7 +19,7 @@ def allowed_file(filename):
 @login_required
 def upload_photos():
     files = request.files.getlist('files')
-    season = request.form.get('season', '')
+    remark = request.form.get('remark', '')
     region = request.form.get('region', '')
     photo_date = request.form.get('photoDate', '')
     album_id = request.form.get('albumId')
@@ -73,7 +73,7 @@ def upload_photos():
             filename=unique_name,
             width=w,
             height=h,
-            season=season,
+            remark=remark,
             region=region,
             photo_date=photo_date,
             album_id=album_id_int,
