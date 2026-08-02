@@ -1,5 +1,15 @@
 <template>
   <div class="bg-white flex-1">
+    <Transition name="toast">
+      <div
+        v-if="toast.show"
+        class="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full text-white text-sm shadow-lg"
+        :class="toast.type === 'error' ? 'bg-red-600' : 'bg-green-600'"
+      >
+        {{ toast.msg }}
+      </div>
+    </Transition>
+
     <div class="h-full flex flex-col md:pt-32 md:max-w-2xl md:mx-auto md:px-0 pt-24  px-6">
       <!-- 上传/预览区：未选图显示提示框，选图后图片覆盖此框 -->
       <div
@@ -103,10 +113,6 @@
         </div>
 
       </div>
-
-      <div v-if="uploadMsg" class="mt-6 text-sm text-center" :class="uploadOk ? 'text-green-600' : 'text-red-500'">
-        {{ uploadMsg }}
-      </div>
     </div>
   </div>
 </template>
@@ -137,10 +143,16 @@ const albums = ref<Album[]>([])
 
 const uploading = ref(false)
 const progress = ref(0)
-const uploadMsg = ref('')
-const uploadOk = ref(false)
+const toast = ref<{ show: boolean; msg: string; type: 'success' | 'error' }>({ show: false, msg: '', type: 'success' })
+let toastTimer: number | undefined
 
 const router = useRouter()
+
+function showToast(msg: string, type: 'success' | 'error' = 'success', duration = 3000) {
+  toast.value = { show: true, msg, type }
+  window.clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => { toast.value.show = false }, duration)
+}
 
 onMounted(async () => {
   if (!(await checkAuth())) {
@@ -154,6 +166,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   previews.value.forEach(p => URL.revokeObjectURL(p.url))
+  window.clearTimeout(toastTimer)
 })
 
 function handleDrop(e: DragEvent) {
@@ -171,8 +184,7 @@ function addFiles(fileList: FileList) {
   const f = fileList[0]
   if (!f || !f.type.startsWith('image/')) return
   if (f.size > MAX_SIZE) {
-    uploadMsg.value = '图片超过 16MB，无法上传'
-    uploadOk.value = false
+    showToast('图片超过 16MB，无法上传', 'error', 4000)
     return
   }
   // 单图模式：替换已有选择，并清空上一张的元数据
@@ -213,14 +225,12 @@ function clearAll() {
   region.value = ''
   photoDate.value = ''
   albumId.value = ''
-  uploadMsg.value = ''
 }
 
 function doUpload() {
   if (!files.value.length) return
   uploading.value = true
   progress.value = 0
-  uploadMsg.value = ''
 
   const formData = new FormData()
   files.value.forEach(f => formData.append('files', f))
@@ -241,25 +251,41 @@ function doUpload() {
     try {
       json = JSON.parse(xhr.responseText)
     } catch {
-      uploadMsg.value = '上传失败，请重试'
-      uploadOk.value = false
+      showToast('上传失败，请重试', 'error', 4000)
       return
     }
-    uploadOk.value = json.code === 0
-    uploadMsg.value = json.message
     if (json.code === 0) {
-      setTimeout(() => clearAll(), 1500)
+      showToast('上传成功')
+      setTimeout(() => clearAll(), 800)
     } else if (xhr.status === 401) {
       setLoggedIn(false)
       router.replace('/login')
       clearAll()
+    } else {
+      showToast(json.message, 'error', 4000)
     }
   }
   xhr.onerror = () => {
     uploading.value = false
-    uploadMsg.value = '网络错误，请重试'
-    uploadOk.value = false
+    showToast('网络错误，请重试', 'error', 4000)
   }
   xhr.send(formData)
 }
 </script>
+
+<style scoped>
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+</style>
