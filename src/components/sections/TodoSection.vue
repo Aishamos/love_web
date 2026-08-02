@@ -18,7 +18,7 @@
               type="checkbox"
               :checked="t.done"
               class="w-4 h-4 accent-gray-900 cursor-pointer"
-              @change="onToggle(t)"
+              @click.prevent="onToggle(t)"
             />
             <span class="text-sm text-gray-700">{{ t.content }}</span>
           </li>
@@ -38,9 +38,10 @@
               type="checkbox"
               :checked="t.done"
               class="w-4 h-4 accent-gray-900 cursor-pointer"
-              @change="onToggle(t)"
+              @click.prevent="onToggle(t)"
             />
             <span class="text-sm text-gray-400 line-through">{{ t.content }}</span>
+            <span class="ml-auto text-xs text-gray-300">{{ formatDoneTime(t.doneTime) }}</span>
           </li>
         </ul>
         <p v-else class="text-sm text-gray-300">暂无已完成事项</p>
@@ -82,7 +83,24 @@ const newContent = ref('')
 const adding = ref(false)
 
 const pending = computed(() => todos.value.filter(t => !t.done).slice(0, 5))
-const completed = computed(() => todos.value.filter(t => t.done).slice(0, 5))
+const completed = computed(() =>
+  todos.value
+    .filter(t => t.done)
+    .sort((a, b) => (b.doneTime ?? '').localeCompare(a.doneTime ?? ''))
+    .slice(0, 5)
+)
+
+function formatDoneTime(iso: string | null | undefined): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return ''
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  return `${y}.${m}.${day} ${hh}:${mm}`
+}
 
 const headerRef = ref<HTMLElement | null>(null)
 useFadeUpOnScroll(headerRef)
@@ -115,12 +133,19 @@ async function onAdd() {
 
 async function onToggle(todo: Todo) {
   if (!(await ensureLogin())) return
+  // 完成/撤销完成都弹确认
+  const msg = todo.done ? '确认取消该事项的完成？' : '确认完成该事项？'
+  if (!window.confirm(msg)) return
   const prev = todo.done
+  const prevDoneTime = todo.doneTime
   todo.done = !prev
+  todo.doneTime = todo.done ? new Date().toISOString() : null
   try {
-    await toggleTodo(todo.id, todo.done)
+    const updated = await toggleTodo(todo.id, todo.done)
+    todo.doneTime = updated.doneTime
   } catch {
     todo.done = prev
+    todo.doneTime = prevDoneTime
   }
 }
 

@@ -3,6 +3,7 @@ from . import api_bp
 from ..auth import login_required
 from ..models import db
 from ..models.todo import Todo
+from ..utils.time import now_local
 
 
 @api_bp.route('/todos')
@@ -38,6 +39,10 @@ def update_todo(todo_id):
 
     data = request.get_json() or {}
     if 'done' in data:
-        todo.done = bool(data['done'])
+        new_done = bool(data['done'])
+        if new_done != todo.done:
+            todo.done = new_done
+            # 完成时记录时间，撤销时清空
+            todo.donetime = now_local() if new_done else None
     db.session.commit()
     return jsonify({'code': 0, 'message': 'ok', 'data': todo.to_dict()})
