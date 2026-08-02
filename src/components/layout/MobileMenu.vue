@@ -17,7 +17,7 @@
 
           <nav v-if="isHome" class="flex flex-col gap-6 text-xl font-light text-gray-700">
             <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#hero')">首页</a>
-            <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#moments')">TodoList</a>
+            <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#todo')">TodoList</a>
             <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="closeAndScroll('#albums')">相册</a>
             <a class="hover:text-gray-900 transition-colors cursor-pointer" @click="goPage('/upload')">上传</a>
           </nav>

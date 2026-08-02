@@ -6,6 +6,7 @@
       <p class="mt-2 text-sm text-gray-400">距离纪念日还有 {{ daysToAnniversary }} 天</p>
     </div>
     <LatestSection :photos="photos" @view="openViewer" />
+    <TodoSection />
     <AlbumsSection :albums="albums" />
   </main>
 </template>
@@ -15,6 +16,7 @@ import { ref, onMounted } from 'vue'
 
 import HeroSection from '@/components/sections/HeroSection.vue'
 import LatestSection from '@/components/sections/LatestSection.vue'
+import TodoSection from '@/components/sections/TodoSection.vue'
 import AlbumsSection from '@/components/sections/AlbumsSection.vue'
 
 import { fetchLatestPhotos, fetchAlbums, fetchHero } from '@/api'
