@@ -1,8 +1,9 @@
 <template>
-  <section id="hero" class="pt-24 px-5">
+  <section id="hero" class="pt-24 px-5 pb-12">
     <div
       ref="sectionRef"
-      class="max-w-7xl mx-auto relative h-[50vh] md:h-[70vh] lg:h-[80vh] overflow-hidden rounded-3xl"
+      class="max-w-7xl mx-auto relative h-[50vh] md:h-[70vh] lg:h-[80vh] overflow-hidden rounded-3xl cursor-pointer"
+      @click="hero.photo && $emit('view', hero.photo)"
     >
       <img
         :src="hero.imageUrl"
@@ -25,10 +26,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { HeroContent } from '@/types'
+import type { HeroContent, Photo } from '@/types'
 import { useFadeUpOnScroll } from '@/composables/useGsapAnimation'
 
 defineProps<{ hero: HeroContent }>()
+defineEmits<{ view: [photo: Photo] }>()
 
 const sectionRef = ref<HTMLElement | null>(null)
 useFadeUpOnScroll(sectionRef)

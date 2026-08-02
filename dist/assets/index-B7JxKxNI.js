@@ -1,0 +1,1 @@
+async function r(t){const n=await fetch(`${t}`);if(!n.ok)throw new Error(`API error: ${n.status}`);const o=await n.json();if(o.code!==0)throw new Error(o.message);return o.data}async function s(t=12){return r(`/api/photos/latest?count=${t}`)}async function a(){return r("/api/albums")}async function e(){return r("/api/hero")}export{s as a,a as b,e as f};

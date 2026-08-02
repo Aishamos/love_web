@@ -1,5 +1,5 @@
 <template>
-  <section id="latest" class="max-w-7xl mx-auto px-6 pb-24">
+  <section id="latest" class="max-w-7xl mx-auto px-6 py-12">
     <div ref="headerRef" class="flex justify-between mb-10">
       <h2 class="text-2xl md:text-3xl font-light">
         Latest

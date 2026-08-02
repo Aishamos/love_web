@@ -15,16 +15,9 @@ export interface Album {
   description?: string
 }
 
-export interface Moment {
-  id: string | number
-  title: string
-  location?: string
-  date: string
-  photoCount: number
-}
-
 export interface HeroContent {
   imageUrl: string
   title: string
   subtitle: string
+  photo?: Photo
 }

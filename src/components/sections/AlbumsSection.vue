@@ -1,5 +1,5 @@
 <template>
-  <section id="albums" class="bg-gray-50 py-24">
+  <section id="albums" class="bg-gray-50 py-12">
     <div class="max-w-6xl mx-auto px-6">
       <h2 ref="titleRef" class="text-2xl md:text-3xl font-light mb-12">
         Albums

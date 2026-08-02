@@ -22,6 +22,7 @@ def get_hero():
                 'imageUrl': image_url,
                 'title': photo.region or '',
                 'subtitle': photo.photo_date or '',
+                'photo': photo.to_dict(),
             }
         })
     return jsonify({

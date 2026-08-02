@@ -1,4 +1,4 @@
-import type { Photo, Album, Moment, HeroContent, ApiResponse, PaginatedData } from '@/types'
+import type { Photo, Album, HeroContent, ApiResponse, PaginatedData } from '@/types'
 
 const BASE = ''
 
@@ -22,10 +22,6 @@ export async function fetchPhotos(albumId?: number, page = 1, pageSize = 20): Pr
 
 export async function fetchAlbums(): Promise<Album[]> {
   return request<Album[]>('/api/albums')
-}
-
-export async function fetchMoments(): Promise<Moment[]> {
-  return request<Moment[]>('/api/moments')
 }
 
 export async function fetchHero(): Promise<HeroContent> {
