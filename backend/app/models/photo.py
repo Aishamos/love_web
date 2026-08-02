@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from ..utils.time import now_local
 from . import db
 
 
@@ -14,7 +14,7 @@ class Photo(db.Model):
     region = db.Column(db.String(100), default='')       # 地区，如 Tokyo
     photo_date = db.Column(db.String(20), default='')    # 拍摄时间，如 2025.03
     album_id = db.Column(db.Integer, db.ForeignKey('albums.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=now_local)
 
     album = db.relationship('Album', back_populates='photos')
 

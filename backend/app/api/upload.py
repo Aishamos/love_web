@@ -1,11 +1,11 @@
 import os
 import uuid
-from flask import request, jsonify
-from werkzeug.utils import secure_filename
+from flask import request, jsonify, current_app
 from . import api_bp
 from ..auth import login_required
 from ..models import db
 from ..models.photo import Photo
+from ..models.album import Album
 from ..utils.image import create_thumbnail
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
@@ -27,8 +27,18 @@ def upload_photos():
     if not files or len(files) == 0:
         return jsonify({'code': 1, 'message': '请选择图片'}), 400
 
-    upload_dir = '/var/www/love_web/uploads'
+    upload_dir = current_app.config['UPLOAD_FOLDER']
     os.makedirs(upload_dir, exist_ok=True)
+
+    # 相册容错：非数字或不存在则不归入相册
+    album_id_int = None
+    if album_id:
+        try:
+            album_id_int = int(album_id)
+            if Album.query.get(album_id_int) is None:
+                album_id_int = None
+        except (TypeError, ValueError):
+            album_id_int = None
 
     results = []
 
@@ -39,16 +49,26 @@ def upload_photos():
         ext = file.filename.rsplit('.', 1)[1].lower()
         unique_name = f"{uuid.uuid4().hex}.{ext}"
 
-        # 保存原图
         src_path = os.path.join(upload_dir, unique_name)
-        file.save(src_path)
+        thumb_path = os.path.join(upload_dir, f"thumb_{unique_name}")
 
-        # 生成缩略图
-        thumb_name = f"thumb_{unique_name}"
-        thumb_path = os.path.join(upload_dir, thumb_name)
-        w, h = create_thumbnail(src_path, thumb_path)
+        try:
+            file.save(src_path)
+        except Exception:
+            if os.path.exists(src_path):
+                os.remove(src_path)
+            return jsonify({'code': 1, 'message': '保存图片失败，请重试'}), 500
 
-        # 写入数据库
+        try:
+            w, h = create_thumbnail(src_path, thumb_path)
+        except Exception:
+            # 缩略图失败（损坏/伪造图片），清理已保存文件避免孤儿
+            if os.path.exists(src_path):
+                os.remove(src_path)
+            if os.path.exists(thumb_path):
+                os.remove(thumb_path)
+            return jsonify({'code': 1, 'message': '图片文件损坏或无法处理'}), 400
+
         photo = Photo(
             filename=unique_name,
             width=w,
@@ -56,12 +76,15 @@ def upload_photos():
             season=season,
             region=region,
             photo_date=photo_date,
-            album_id=int(album_id) if album_id else None,
+            album_id=album_id_int,
         )
         db.session.add(photo)
         results.append(photo)
 
     db.session.commit()
+
+    if not results:
+        return jsonify({'code': 1, 'message': '没有可上传的图片'}), 400
 
     return jsonify({
         'code': 0,

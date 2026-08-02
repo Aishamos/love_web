@@ -102,27 +102,32 @@
           </button>
         </div>
 
-        <div v-if="uploadMsg" class="text-sm text-center" :class="uploadOk ? 'text-green-600' : 'text-red-500'">
-          {{ uploadMsg }}
-        </div>
+      </div>
+
+      <div v-if="uploadMsg" class="mt-6 text-sm text-center" :class="uploadOk ? 'text-green-600' : 'text-red-500'">
+        {{ uploadMsg }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { fetchAlbums } from '@/api'
 import { parse as parseExif } from 'exifr'
 import type { Album } from '@/types'
 
-const { setLoggedIn } = useAuth()
+const { checkAuth, setLoggedIn } = useAuth()
+
+const MAX_SIZE = 16 * 1024 * 1024
 
 const files = ref<File[]>([])
 const previews = ref<{ url: string; file: File }[]>([])
 const dragging = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
+let exifSeq = 0
 
 const season = ref('')
 const region = ref('')
@@ -138,23 +143,17 @@ const uploadOk = ref(false)
 const router = useRouter()
 
 onMounted(async () => {
-  const res = await fetch('/api/auth/check', { credentials: 'same-origin' })
-  if (res.ok) {
-    const json = await res.json()
-    if (json.code !== 0) {
-      router.replace('/login')
-      return
-    }
-  } else {
+  if (!(await checkAuth())) {
     router.replace('/login')
     return
   }
-  // 已登录，加载相册列表
   try {
-    const r = await fetch('/api/albums')
-    const j = await r.json()
-    if (j.code === 0) albums.value = j.data
+    albums.value = await fetchAlbums()
   } catch {}
+})
+
+onUnmounted(() => {
+  previews.value.forEach(p => URL.revokeObjectURL(p.url))
 })
 
 function handleDrop(e: DragEvent) {
@@ -169,21 +168,25 @@ function handleFiles(e: Event) {
 }
 
 function addFiles(fileList: FileList) {
-  for (let i = 0; i < fileList.length; i++) {
-    const f = fileList[i]
-    if (!f.type.startsWith('image/')) continue
-    // 单图模式：替换已有选择，并清空上一张的元数据
-    clearAll()
-    files.value.push(f)
-    previews.value.push({ url: URL.createObjectURL(f), file: f })
-    fillDateFromExif(f)
-    break
+  const f = fileList[0]
+  if (!f || !f.type.startsWith('image/')) return
+  if (f.size > MAX_SIZE) {
+    uploadMsg.value = '图片超过 16MB，无法上传'
+    uploadOk.value = false
+    return
   }
+  // 单图模式：替换已有选择，并清空上一张的元数据
+  clearAll()
+  files.value.push(f)
+  previews.value.push({ url: URL.createObjectURL(f), file: f })
+  fillDateFromExif(f)
 }
 
 async function fillDateFromExif(file: File) {
+  const seq = ++exifSeq
   try {
     const exif = await parseExif(file, { pick: ['DateTimeOriginal'] })
+    if (seq !== exifSeq) return
     const d = exif?.DateTimeOriginal
     if (d instanceof Date && !isNaN(d.getTime())) {
       const y = d.getFullYear()
@@ -213,7 +216,7 @@ function clearAll() {
   uploadMsg.value = ''
 }
 
-async function doUpload() {
+function doUpload() {
   if (!files.value.length) return
   uploading.value = true
   progress.value = 0
@@ -226,29 +229,37 @@ async function doUpload() {
   formData.append('photoDate', photoDate.value)
   formData.append('albumId', albumId.value)
 
-  try {
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      credentials: 'same-origin',
-      body: formData,
-    })
-
-    const json = await res.json()
+  const xhr = new XMLHttpRequest()
+  xhr.open('POST', '/api/upload')
+  xhr.withCredentials = true
+  xhr.upload.onprogress = (e) => {
+    if (e.lengthComputable) progress.value = Math.round((e.loaded / e.total) * 100)
+  }
+  xhr.onload = () => {
     uploading.value = false
+    let json
+    try {
+      json = JSON.parse(xhr.responseText)
+    } catch {
+      uploadMsg.value = '上传失败，请重试'
+      uploadOk.value = false
+      return
+    }
     uploadOk.value = json.code === 0
     uploadMsg.value = json.message
-
     if (json.code === 0) {
       setTimeout(() => clearAll(), 1500)
-    } else if (res.status === 401) {
+    } else if (xhr.status === 401) {
       setLoggedIn(false)
       router.replace('/login')
       clearAll()
     }
-  } catch {
+  }
+  xhr.onerror = () => {
     uploading.value = false
     uploadMsg.value = '网络错误，请重试'
     uploadOk.value = false
   }
+  xhr.send(formData)
 }
 </script>
