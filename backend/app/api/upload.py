@@ -69,6 +69,12 @@ def upload_photos():
                 os.remove(thumb_path)
             return jsonify({'code': 1, 'message': '图片文件损坏或无法处理'}), 400
 
+        # Hero 用的中等尺寸图（1600px），失败不影响上传（Hero 会回退原图）
+        try:
+            create_thumbnail(src_path, os.path.join(upload_dir, f"medium_{unique_name}"), size=(1600, 1600))
+        except Exception:
+            pass
+
         photo = Photo(
             filename=unique_name,
             width=w,

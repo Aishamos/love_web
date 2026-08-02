@@ -4,7 +4,7 @@
     @click="$emit('click')"
   >
     <img
-      :src="photo.url"
+      :src="photo.thumbnailUrl ?? photo.url"
       :alt="photo.alt ?? ''"
       loading="lazy"
       class="w-full h-64 md:h-72 lg:h-80 object-cover transition-transform duration-500 group-hover:scale-105"
