@@ -12,8 +12,8 @@
 
       <nav v-if="isHome" class="hidden md:flex gap-10 text-sm text-gray-500">
         <RouterLink :to="{ hash: '#hero' }" class="hover:text-gray-900 transition-colors">首页</RouterLink>
-        <RouterLink :to="{ hash: '#albums' }" class="hover:text-gray-900 transition-colors">相册</RouterLink>
         <RouterLink :to="{ hash: '#moments' }" class="hover:text-gray-900 transition-colors">TodoList</RouterLink>
+        <RouterLink :to="{ hash: '#albums' }" class="hover:text-gray-900 transition-colors">相册</RouterLink>
         <RouterLink to="/upload" class="hover:text-gray-900 transition-colors">上传</RouterLink>
       </nav>
       <RouterLink v-if="!isHome" to="/" class="hidden md:block text-sm text-gray-400 hover:text-gray-700 transition-colors">返回首页</RouterLink>
