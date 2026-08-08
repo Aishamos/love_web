@@ -118,7 +118,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import { fetchAlbums, getCsrfToken } from '@/api'
+import { fetchAlbums, uploadPhotos, ApiError } from '@/api'
 import { parse as parseExif } from 'exifr'
 import type { Album } from '@/types'
 
@@ -227,14 +227,6 @@ function clearAll() {
 async function doUpload() {
   if (!files.value.length) return
 
-  let csrfToken: string
-  try {
-    csrfToken = await getCsrfToken()
-  } catch {
-    showToast('获取安全凭证失败，请重试', 'error', 4000)
-    return
-  }
-
   uploading.value = true
   progress.value = 0
 
@@ -245,38 +237,21 @@ async function doUpload() {
   formData.append('photoDate', photoDate.value)
   formData.append('albumId', albumId.value)
 
-  const xhr = new XMLHttpRequest()
-  xhr.open('POST', '/api/upload')
-  xhr.withCredentials = true
-  xhr.setRequestHeader('X-CSRF-Token', csrfToken)
-  xhr.upload.onprogress = (e) => {
-    if (e.lengthComputable) progress.value = Math.round((e.loaded / e.total) * 100)
-  }
-  xhr.onload = () => {
-    uploading.value = false
-    let json
-    try {
-      json = JSON.parse(xhr.responseText)
-    } catch {
-      showToast('上传失败，请重试', 'error', 4000)
-      return
-    }
-    if (json.code === 0) {
-      showToast('上传成功')
-      setTimeout(() => clearAll(), 800)
-    } else if (xhr.status === 401) {
+  try {
+    await uploadPhotos(formData, (p) => { progress.value = p })
+    showToast('上传成功')
+    setTimeout(() => clearAll(), 800)
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
       setLoggedIn(false)
       router.replace({ path: '/login', query: { redirect: '/upload' } })
       clearAll()
     } else {
-      showToast(json.message, 'error', 4000)
+      showToast(err instanceof Error ? err.message : '上传失败，请重试', 'error', 4000)
     }
-  }
-  xhr.onerror = () => {
+  } finally {
     uploading.value = false
-    showToast('网络错误，请重试', 'error', 4000)
   }
-  xhr.send(formData)
 }
 </script>
 

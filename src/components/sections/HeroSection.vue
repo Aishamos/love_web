@@ -10,6 +10,7 @@
         :alt="hero.title"
         class="w-full h-full object-cover"
         fetchpriority="high"
+        @error="onImgError"
       />
 
       <div class="absolute bottom-10 left-10 text-white">
@@ -28,10 +29,19 @@
 import { ref } from 'vue'
 import type { HeroContent, Photo } from '@/types'
 import { useFadeUpOnScroll } from '@/composables/useGsapAnimation'
+import { FALLBACK_IMAGE } from '@/utils/imageFallback'
 
-defineProps<{ hero: HeroContent }>()
+const props = defineProps<{ hero: HeroContent }>()
 defineEmits<{ view: [photo: Photo] }>()
 
 const sectionRef = ref<HTMLElement | null>(null)
 useFadeUpOnScroll(sectionRef)
+
+function onImgError(e: Event) {
+  const img = e.target as HTMLImageElement
+  if (img.src !== FALLBACK_IMAGE) {
+    img.src = FALLBACK_IMAGE
+    img.alt = props.hero.title || '图片不可用'
+  }
+}
 </script>

@@ -45,7 +45,7 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import { getCsrfToken } from '@/api'
+import { login as apiLogin } from '@/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -63,22 +63,8 @@ async function login() {
   loading.value = true
   loginError.value = ''
 
-  let res: Response
   try {
-    const token = await getCsrfToken()
-    res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
-      credentials: 'same-origin',
-      body: JSON.stringify({ username: username.value, password: password.value }),
-    })
-  } catch {
-    loginError.value = '网络错误，请重试'
-    loading.value = false
-    return
-  }
-
-  if (res.ok) {
+    await apiLogin(username.value, password.value)
     setLoggedIn(true)
     const redirect = typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
       ? route.query.redirect
@@ -89,9 +75,10 @@ async function login() {
     } else {
       router.push(redirect)
     }
-  } else {
-    loginError.value = '账号或密码错误'
+  } catch (err) {
+    loginError.value = err instanceof Error ? err.message : '登录失败，请重试'
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 </script>
