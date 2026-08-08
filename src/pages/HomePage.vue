@@ -6,7 +6,7 @@
       <p class="mt-2 text-sm text-gray-400">距离纪念日还有 {{ daysToAnniversary }} 天</p>
     </div>
     <LatestSection :photos="photos" @view="openViewer" @view-all="goAllPhotos" />
-    <TodoSection />
+    <TodoSection @view-all="goAllTodos" />
     <AlbumsSection :albums="albums" />
   </main>
 </template>
@@ -45,6 +45,10 @@ function openHero(photo: Photo) {
 
 function goAllPhotos() {
   router.push('/photos')
+}
+
+function goAllTodos() {
+  router.push('/todos')
 }
 
 onMounted(async () => {
