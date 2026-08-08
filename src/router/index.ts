@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import('@/pages/PhotosPage.vue'),
     },
     {
+      path: '/albums/:id',
+      name: 'album',
+      component: () => import('@/pages/PhotosPage.vue'),
+    },
+    {
       path: '/todos',
       name: 'todos',
       component: () => import('@/pages/TodosPage.vue'),

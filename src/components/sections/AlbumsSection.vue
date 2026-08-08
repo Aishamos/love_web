@@ -13,6 +13,7 @@
           v-for="album in albums"
           :key="album.id"
           :album="album"
+          @click="openAlbum(album)"
         />
       </div>
     </div>
@@ -21,11 +22,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Album } from '@/types'
 import AlbumCard from '@/components/common/AlbumCard.vue'
 import { useFadeUpOnScroll } from '@/composables/useGsapAnimation'
 
 defineProps<{ albums: Album[] }>()
+const router = useRouter()
+
+function openAlbum(album: Album) {
+  router.push(`/albums/${album.id}`)
+}
 
 const titleRef = ref<HTMLElement | null>(null)
 const gridRef = ref<HTMLElement | null>(null)

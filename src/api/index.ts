@@ -66,6 +66,10 @@ export async function fetchAlbums(): Promise<Album[]> {
   return request<Album[]>('/api/albums')
 }
 
+export async function fetchAlbum(id: string | number): Promise<Album> {
+  return request<Album>(`/api/albums/${id}`)
+}
+
 export async function fetchHero(): Promise<HeroContent> {
   return request<HeroContent>('/api/hero')
 }
