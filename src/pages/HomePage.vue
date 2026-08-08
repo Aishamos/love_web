@@ -58,6 +58,8 @@ onMounted(async () => {
   // 刷新/首次加载时按 URL hash 定位区块（弥补首次导航 scrollBehavior 不可靠）
   if (route.hash) {
     await nextTick()
+    // 等待页面切换过渡动画结束，避免 transform 干扰元素位置计算
+    await new Promise((resolve) => setTimeout(resolve, 300))
     const el = document.querySelector(route.hash)
     if (el) {
       const top = el.getBoundingClientRect().top + window.scrollY - 96
