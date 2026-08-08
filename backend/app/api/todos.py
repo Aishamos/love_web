@@ -39,7 +39,9 @@ def update_todo(todo_id):
 
     data = request.get_json() or {}
     if 'done' in data:
-        new_done = bool(data['done'])
+        if not isinstance(data['done'], bool):
+            return jsonify({'code': 1, 'message': 'done 必须是布尔值'}), 400
+        new_done = data['done']
         if new_done != todo.done:
             todo.done = new_done
             # 完成时记录时间，撤销时清空
