@@ -2,7 +2,9 @@
   <Teleport to="body">
     <div
       v-if="state.isOpen"
-      class="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center"
+      ref="viewerRef"
+      class="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center focus:outline-none"
+      tabindex="-1"
       @click.self="close"
       @keydown.esc="close"
       @keydown.left="prev"
@@ -50,7 +52,24 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, nextTick, onUnmounted } from 'vue'
 import { usePhotoViewer } from '@/composables/usePhotoViewer'
 
 const { state, close, next, prev } = usePhotoViewer()
+const viewerRef = ref<HTMLElement | null>(null)
+
+watch(
+  () => state.isOpen,
+  async (open) => {
+    if (open) {
+      await nextTick()
+      viewerRef.value?.focus()
+    }
+  }
+)
+
+onUnmounted(() => {
+  // 组件被卸载时兜底恢复页面滚动，避免滚动锁定残留
+  document.body.style.overflow = ''
+})
 </script>

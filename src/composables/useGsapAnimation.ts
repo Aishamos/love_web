@@ -29,8 +29,12 @@ export function useFadeUpOnScroll(
       trigger: target.value,
       start,
       onEnter() {
+        const el = target.value
+        if (!el) return
+        // stagger 传值时逐个子元素动画，否则整体淡入
+        const targets = stagger && stagger > 0 ? Array.from(el.children) : [el]
         gsap.fromTo(
-          target.value!,
+          targets,
           { opacity: 0, y },
           { opacity: 1, y: 0, duration, stagger, ease: 'power2.out' }
         )

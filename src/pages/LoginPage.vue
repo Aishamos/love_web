@@ -45,6 +45,7 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { getCsrfToken } from '@/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -62,12 +63,20 @@ async function login() {
   loading.value = true
   loginError.value = ''
 
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin',
-    body: JSON.stringify({ username: username.value, password: password.value }),
-  })
+  let res: Response
+  try {
+    const token = await getCsrfToken()
+    res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+      credentials: 'same-origin',
+      body: JSON.stringify({ username: username.value, password: password.value }),
+    })
+  } catch {
+    loginError.value = '网络错误，请重试'
+    loading.value = false
+    return
+  }
 
   if (res.ok) {
     setLoggedIn(true)

@@ -7,8 +7,9 @@ from ..models.photo import Photo
 @api_bp.route('/photos')
 def get_photos():
     album_id = request_args('albumId', int)
-    page = request_args('page', int, 1)
-    page_size = request_args('pageSize', int, 20)
+    page = max(1, request_args('page', int, 1) or 1)
+    page_size = request_args('pageSize', int, 20) or 20
+    page_size = max(1, min(page_size, 50))
 
     query = Photo.query.order_by(Photo.created_at.desc())
     if album_id:
@@ -31,7 +32,8 @@ def get_photos():
 
 @api_bp.route('/photos/latest')
 def get_latest_photos():
-    count = request_args('count', int, 12)
+    count = request_args('count', int, 12) or 12
+    count = max(1, min(count, 50))
     photos = Photo.query.order_by(Photo.created_at.desc()).limit(count).all()
     return jsonify({
         'code': 0,

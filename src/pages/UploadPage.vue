@@ -118,7 +118,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import { fetchAlbums } from '@/api'
+import { fetchAlbums, getCsrfToken } from '@/api'
 import { parse as parseExif } from 'exifr'
 import type { Album } from '@/types'
 
@@ -224,8 +224,17 @@ function clearAll() {
   albumId.value = ''
 }
 
-function doUpload() {
+async function doUpload() {
   if (!files.value.length) return
+
+  let csrfToken: string
+  try {
+    csrfToken = await getCsrfToken()
+  } catch {
+    showToast('获取安全凭证失败，请重试', 'error', 4000)
+    return
+  }
+
   uploading.value = true
   progress.value = 0
 
@@ -239,6 +248,7 @@ function doUpload() {
   const xhr = new XMLHttpRequest()
   xhr.open('POST', '/api/upload')
   xhr.withCredentials = true
+  xhr.setRequestHeader('X-CSRF-Token', csrfToken)
   xhr.upload.onprogress = (e) => {
     if (e.lengthComputable) progress.value = Math.round((e.loaded / e.total) * 100)
   }

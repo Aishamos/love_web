@@ -2,6 +2,24 @@ import type { Photo, Album, HeroContent, Todo, ApiResponse, PaginatedData } from
 
 const BASE = ''
 
+let csrfTokenPromise: Promise<string> | null = null
+
+export async function getCsrfToken(): Promise<string> {
+  if (!csrfTokenPromise) {
+    csrfTokenPromise = fetch('/api/auth/csrf', { credentials: 'same-origin' })
+      .then((res) => res.json())
+      .then((json: ApiResponse<{ token: string }>) => {
+        if (json.code !== 0) throw new Error(json.message)
+        return json.data.token
+      })
+      .catch((err) => {
+        csrfTokenPromise = null
+        throw err
+      })
+  }
+  return csrfTokenPromise
+}
+
 async function request<T>(url: string): Promise<T> {
   const res = await fetch(`${BASE}${url}`)
   if (!res.ok) throw new Error(`API error: ${res.status}`)
@@ -11,10 +29,11 @@ async function request<T>(url: string): Promise<T> {
 }
 
 async function jsonRequest<T>(url: string, method: 'POST' | 'PATCH', body?: unknown): Promise<T> {
+  const token = await getCsrfToken()
   const res = await fetch(`${BASE}${url}`, {
     method,
     credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   const json: ApiResponse<T> = await res.json()

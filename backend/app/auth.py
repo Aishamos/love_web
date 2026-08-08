@@ -1,8 +1,15 @@
 from functools import wraps
 from flask import session, jsonify, request, Blueprint
 from .models.user import User
+from .utils.csrf import ensure_csrf_token
 
 auth_bp = Blueprint('auth', __name__)
+
+
+@auth_bp.route('/csrf')
+def csrf_token():
+    """返回当前会话的 CSRF token（写请求需在 X-CSRF-Token 请求头携带）。"""
+    return jsonify({'code': 0, 'message': 'ok', 'data': {'token': ensure_csrf_token()}})
 
 
 @auth_bp.route('/login', methods=['POST'])
