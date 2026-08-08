@@ -5,7 +5,7 @@
       <p class="text-sm text-gray-500">我们已经在一起 {{ togetherText }}</p>
       <p class="mt-2 text-sm text-gray-400">距离纪念日还有 {{ daysToAnniversary }} 天</p>
     </div>
-    <LatestSection :photos="photos" @view="openViewer" />
+    <LatestSection :photos="photos" @view="openViewer" @view-all="goAllPhotos" />
     <TodoSection />
     <AlbumsSection :albums="albums" />
   </main>
@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import HeroSection from '@/components/sections/HeroSection.vue'
 import LatestSection from '@/components/sections/LatestSection.vue'
@@ -26,6 +26,7 @@ import { useAnniversary } from '@/composables/useAnniversary'
 import type { Photo, Album, HeroContent } from '@/types'
 
 const route = useRoute()
+const router = useRouter()
 const { open } = usePhotoViewer()
 const { togetherText, daysToAnniversary } = useAnniversary()
 
@@ -40,6 +41,10 @@ function openViewer(photo: Photo) {
 
 function openHero(photo: Photo) {
   open([photo], 0)
+}
+
+function goAllPhotos() {
+  router.push('/photos')
 }
 
 onMounted(async () => {

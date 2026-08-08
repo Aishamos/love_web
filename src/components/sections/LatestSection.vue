@@ -4,7 +4,10 @@
       <h2 class="text-2xl md:text-3xl font-light">
         Latest
       </h2>
-      <button class="text-sm border rounded-full px-5 py-2 hover:bg-gray-50 transition-colors">
+      <button
+        class="text-sm border rounded-full px-5 py-2 hover:bg-gray-50 transition-colors"
+        @click="$emit('viewAll')"
+      >
         View All
       </button>
     </div>
@@ -30,7 +33,7 @@ import PhotoCard from '@/components/common/PhotoCard.vue'
 import { useFadeUpOnScroll } from '@/composables/useGsapAnimation'
 
 defineProps<{ photos: Photo[] }>()
-defineEmits<{ view: [photo: Photo] }>()
+defineEmits<{ view: [photo: Photo]; viewAll: [] }>()
 
 const headerRef = ref<HTMLElement | null>(null)
 const gridRef = ref<HTMLElement | null>(null)
