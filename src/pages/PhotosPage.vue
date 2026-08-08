@@ -7,20 +7,6 @@
           All Photos
           <span v-if="total" class="text-base text-gray-400 ml-2">{{ total }}</span>
         </h1>
-        <div class="flex gap-3">
-          <button
-            class="text-sm border rounded-full px-5 py-2 hover:bg-gray-50 transition-colors"
-            @click="goUpload"
-          >
-            上传
-          </button>
-          <button
-            class="text-sm border rounded-full px-5 py-2 hover:bg-gray-50 transition-colors"
-            @click="goBack"
-          >
-            ← 返回
-          </button>
-        </div>
       </div>
 
       <!-- 照片网格 -->
@@ -63,7 +49,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
 import PhotoCard from '@/components/common/PhotoCard.vue'
 import { fetchPhotos } from '@/api'
 import { usePhotoViewer } from '@/composables/usePhotoViewer'
@@ -71,7 +56,6 @@ import type { Photo } from '@/types'
 
 const PAGE_SIZE = 20
 
-const router = useRouter()
 const { open } = usePhotoViewer()
 
 const photos = ref<Photo[]>([])
@@ -82,18 +66,6 @@ const loading = ref(false)
 const error = ref('')
 const sentinelRef = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
-
-function goBack() {
-  if (window.history.length > 1) {
-    router.back()
-  } else {
-    router.push('/')
-  }
-}
-
-function goUpload() {
-  router.push('/upload')
-}
 
 function openViewer(index: number) {
   open(photos.value, index)
