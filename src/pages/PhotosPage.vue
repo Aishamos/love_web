@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-6">
       <!-- 标题栏：与首页区块风格一致 -->
       <div class="flex items-center justify-between mb-10">
-        <h1 class="text-2xl md:text-3xl font-light">
+        <h1 class="text-lg font-light">
           All Photos
           <span v-if="total" class="text-base text-gray-400 ml-2">{{ total }}</span>
         </h1>
