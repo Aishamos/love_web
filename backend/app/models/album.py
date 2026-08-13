@@ -13,11 +13,13 @@ class Album(db.Model):
 
     photos = db.relationship('Photo', back_populates='album', lazy='dynamic')
 
-    def to_dict(self):
+    def to_dict(self, photo_count=None):
+        """序列化为字典；photo_count 由外部 join 查询传入时可避免每相册一次 COUNT。"""
+        count = self.photos.count() if photo_count is None else photo_count
         return {
             'id': self.id,
             'title': self.title,
             'description': self.description,
             'coverUrl': f'/static/uploads/{self.cover_filename}' if self.cover_filename else '',
-            'photoCount': self.photos.count(),
+            'photoCount': count,
         }

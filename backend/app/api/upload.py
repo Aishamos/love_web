@@ -15,6 +15,18 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def cleanup_upload_files(upload_dir, names):
+    """删除已写入的原图/缩略图/中图，避免数据库回滚后留下孤儿文件。"""
+    for name in names:
+        for prefix in ('', 'thumb_', 'medium_'):
+            path = os.path.join(upload_dir, f'{prefix}{name}')
+            if os.path.exists(path):
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
+
+
 @api_bp.route('/upload', methods=['POST'])
 @login_required
 def upload_photos():
@@ -41,6 +53,7 @@ def upload_photos():
             album_id_int = None
 
     results = []
+    saved_names = []
 
     for file in files:
         if not file.filename or not allowed_file(file.filename):
@@ -55,18 +68,19 @@ def upload_photos():
         try:
             file.save(src_path)
         except Exception:
-            if os.path.exists(src_path):
-                os.remove(src_path)
+            db.session.rollback()
+            cleanup_upload_files(upload_dir, [unique_name])
+            cleanup_upload_files(upload_dir, saved_names)
             return jsonify({'code': 1, 'message': '保存图片失败，请重试'}), 500
+
+        saved_names.append(unique_name)
 
         try:
             w, h = create_thumbnail(src_path, thumb_path)
         except Exception:
             # 缩略图失败（损坏/伪造图片），清理已保存文件避免孤儿
-            if os.path.exists(src_path):
-                os.remove(src_path)
-            if os.path.exists(thumb_path):
-                os.remove(thumb_path)
+            db.session.rollback()
+            cleanup_upload_files(upload_dir, saved_names)
             return jsonify({'code': 1, 'message': '图片文件损坏或无法处理'}), 400
 
         # Hero 用的中等尺寸图（1600px），失败不影响上传（Hero 会回退原图）
@@ -87,7 +101,12 @@ def upload_photos():
         db.session.add(photo)
         results.append(photo)
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        cleanup_upload_files(upload_dir, saved_names)
+        return jsonify({'code': 1, 'message': '保存图片失败，请重试'}), 500
 
     if not results:
         return jsonify({'code': 1, 'message': '没有可上传的图片'}), 400
