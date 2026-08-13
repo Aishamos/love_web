@@ -68,7 +68,8 @@ LOVE_web/
 │   │   ├── models/         # 数据模型
 │   │   └── utils/          # 图片处理 / 时间 / CSRF
 │   ├── migrations/         # 手动 SQL 迁移脚本
-│   ├── seed.py             # 种子数据（需显式确认，勿在生产误跑）
+│   ├── seed_db.py          # 初始化数据库种子数据（示例相册，需显式确认）
+│   ├── init_admin.py       # 初始化/重置管理员账号密码（需显式确认）
 │   ├── wsgi.py             # gunicorn 入口
 │   └── requirements.txt
 ├── dist/                   # 前端构建产物（不纳入 git，部署时上传）
@@ -109,14 +110,15 @@ GRANT ALL PRIVILEGES ON love_web.* TO 'love'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-数据库表由后端启动时自动创建（`db.create_all()`）；如需初始化相册与管理员账号，执行：
+数据库表由后端启动时自动创建（`db.create_all()`）；如需初始化示例相册或管理员账号，分别执行：
 
 ```bash
 cd backend
-ADMIN_PASSWORD=你的密码 python seed.py --yes
+python seed_db.py --yes              # 初始化示例相册（清空照片与相册后重建）
+ADMIN_PASSWORD=你的密码 python init_admin.py --yes   # 创建/重置管理员账号
 ```
 
-> ⚠️ `seed.py` 会**清空** photos / albums / users 三张表后重建，必须加 `--yes` 或设 `SEED_CONFIRM=1` 才会执行，生产环境慎用。
+> ⚠️ `seed_db.py` 会**清空** photos / albums 两张表后重建示例相册；`init_admin.py` 只创建/重置账号，不影响照片与相册。两者都必须加 `--yes` 或设 `SEED_CONFIRM=1` 才会执行。
 
 ---
 
@@ -129,9 +131,9 @@ ADMIN_PASSWORD=你的密码 python seed.py --yes
 | `UPLOAD_FOLDER` | 图片存储目录 | `/var/www/love_web/uploads` | 否 |
 | `FLASK_ENV` | `development` / `production`；production 时 cookie 强制 HTTPS | `development` | 否 |
 | `ALLOWED_ORIGINS` | CORS 允许来源，逗号分隔 | `http://localhost:3000,http://127.0.0.1:3000` | 否 |
-| `ADMIN_USERNAME` | seed 创建的管理员用户名 | `0609` | 否 |
-| `ADMIN_PASSWORD` | seed 创建的管理员密码；不设则随机生成并打印一次 | 无 | 建议设置 |
-| `SEED_CONFIRM` | 置为 `1` 等效于 `seed.py --yes` | 无 | 否 |
+| `ADMIN_USERNAME` | init_admin.py 创建的管理员用户名 | `0609` | 否 |
+| `ADMIN_PASSWORD` | init_admin.py 创建/重置的管理员密码；不设则随机生成并打印一次 | 无 | 建议设置 |
+| `SEED_CONFIRM` | 置为 `1` 等效于脚本 `--yes`（seed_db.py / init_admin.py） | 无 | 否 |
 
 生成强随机密钥：
 
@@ -152,8 +154,8 @@ openssl rand -hex 32
 
 ### 网站管理员
 
-- 由 `seed.py` 创建，用户名默认 `0609`，密码由 `ADMIN_PASSWORD` 指定或随机生成（随机时会打印到终端，请注意保存）
-- 修改管理员密码：重新执行 seed（会清空数据）或在 MySQL 中更新 `users.password_hash`
+- 由 `init_admin.py` 创建，用户名默认 `0609`，密码由 `ADMIN_PASSWORD` 指定或随机生成（随机时会打印到终端，请注意保存）
+- 重置管理员密码：`ADMIN_PASSWORD=新密码 python init_admin.py --yes`（不影响照片与相册数据）
 - 登录页地址：`/login`
 
 ### 会话密钥
@@ -212,13 +214,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. 初始化管理员与种子数据（仅首次）
+### 5. 初始化示例相册与管理员账号（仅首次）
 
 ```bash
 cd /var/www/love_web/backend
 export SECRET_KEY="用 openssl rand -hex 32 生成的值"
+python seed_db.py --yes
 export ADMIN_PASSWORD="你的管理员密码"
-python seed.py --yes
+python init_admin.py --yes
 ```
 
 ### 6. 配置 systemd 服务
