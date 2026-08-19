@@ -145,7 +145,7 @@ openssl rand -hex 32
 
 ## 纪念日与见面日期配置
 
-首页（桌面导航栏与移动端）显示的"在一起天数""纪念日倒计时""距离见面天数"来自前端配置文件 [src/data/anniversary.ts](src/data/anniversary.ts)，**上线前必须改成真实日期**（当前为占位值）：
+首页（桌面导航栏与移动端）显示的"在一起天数""纪念日倒计时""距离见面天数"来自前端配置 [src/composables/useAnniversary.ts](src/composables/useAnniversary.ts) 顶部的常量，**上线前必须改成真实日期**（当前为占位值）：
 
 ```ts
 export const ANNIVERSARY_START = new Date(2026, 5, 9) // 在一起的起始日期（年, 月-1, 日）
