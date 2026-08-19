@@ -57,7 +57,7 @@ LOVE_web/
 ├── src/                    # 前端源码
 │   ├── api/                # API 封装（含 CSRF token 管理）
 │   ├── components/         # 布局 / 区块 / 通用组件
-│   ├── composables/        # Vue 组合式函数（认证、图片查看器、动画等）
+│   ├── composables/        # Vue 组合式函数（认证、图片查看器、纪念日、Todo、动画等）
 │   ├── pages/              # 页面（首页 / 登录 / 上传）
 │   ├── router/             # 路由与滚动行为
 │   ├── types/              # TypeScript 类型
