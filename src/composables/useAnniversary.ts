@@ -1,5 +1,10 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { ANNIVERSARY_START, ANNIVERSARY_MONTH, ANNIVERSARY_DAY } from '@/data/anniversary'
+import {
+  ANNIVERSARY_START,
+  ANNIVERSARY_MONTH,
+  ANNIVERSARY_DAY,
+  MEETING_DATE,
+} from '@/data/anniversary'
 
 export function useAnniversary() {
   const now = ref(new Date())
@@ -15,13 +20,8 @@ export function useAnniversary() {
   const totalDays = computed(() =>
     Math.max(0, Math.floor((now.value.getTime() - ANNIVERSARY_START.getTime()) / 86400000))
   )
-  const togetherYears = computed(() => Math.floor(totalDays.value / 365))
-  const togetherDays = computed(() => totalDays.value % 365)
-  const togetherText = computed(() =>
-    togetherYears.value > 0
-      ? `${togetherYears.value} 年 ${togetherDays.value} 天`
-      : `${togetherDays.value} 天`
-  )
+  // 只显示总天数，不折算成年
+  const togetherText = computed(() => `${totalDays.value} 天`)
 
   const daysToAnniversary = computed(() => {
     const y = now.value.getFullYear()
@@ -32,5 +32,10 @@ export function useAnniversary() {
     return Math.ceil((next.getTime() - now.value.getTime()) / 86400000)
   })
 
-  return { togetherYears, togetherDays, togetherText, daysToAnniversary }
+  // 距离见面还有多少天（日期已过则为负数，由页面决定展示）
+  const daysToMeeting = computed(() =>
+    Math.ceil((MEETING_DATE.getTime() - now.value.getTime()) / 86400000)
+  )
+
+  return { togetherText, daysToAnniversary, daysToMeeting }
 }
