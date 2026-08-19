@@ -5,7 +5,7 @@
         <div class="text-xl tracking-widest">
           OUR STORY
         </div>
-        <span v-if="isHome" class="hidden md:inline text-xs text-gray-400">
+        <span v-if="isHome && loaded" class="hidden md:inline text-xs text-gray-400">
           在一起 {{ togetherText }} · 纪念日还有 {{ daysToAnniversary }}天
           <template v-if="daysToMeeting > 0"> · 距离见面还有 {{ daysToMeeting }}天</template>
           <template v-else> · 已见面</template>
@@ -38,5 +38,5 @@ import { useAnniversary } from '@/composables/useAnniversary'
 const route = useRoute()
 const mobileOpen = ref(false)
 const isHome = computed(() => route.path === '/')
-const { togetherText, daysToAnniversary, daysToMeeting } = useAnniversary()
+const { loaded, togetherText, daysToAnniversary, daysToMeeting } = useAnniversary()
 </script>

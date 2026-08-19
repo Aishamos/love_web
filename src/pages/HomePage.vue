@@ -1,7 +1,7 @@
 <template>
   <main>
     <HeroSection :hero="hero" @view="openHero" />
-    <div class="md:hidden px-6 pb-12 text-center">
+    <div v-if="loaded" class="md:hidden px-6 pb-12 text-center">
       <p class="text-sm text-gray-500">我们已经在一起 {{ togetherText }}</p>
       <p class="mt-2 text-sm text-gray-400">距离纪念日还有 {{ daysToAnniversary }} 天</p>
       <p v-if="daysToMeeting > 0" class="mt-2 text-sm text-gray-400">
@@ -32,7 +32,7 @@ import type { Photo, Album, HeroContent } from '@/types'
 const route = useRoute()
 const router = useRouter()
 const { open } = usePhotoViewer()
-const { togetherText, daysToAnniversary, daysToMeeting } = useAnniversary()
+const { loaded, togetherText, daysToAnniversary, daysToMeeting } = useAnniversary()
 
 const hero = ref<HeroContent>({ imageUrl: '', title: '', subtitle: '' })
 const photos = ref<Photo[]>([])

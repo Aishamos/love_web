@@ -145,22 +145,26 @@ openssl rand -hex 32
 
 ## 纪念日与见面日期配置
 
-首页（桌面导航栏与移动端）显示的"在一起天数""纪念日倒计时""距离见面天数"来自前端配置 [src/composables/useAnniversary.ts](src/composables/useAnniversary.ts) 顶部的常量，**上线前必须改成真实日期**（当前为占位值）：
+首页（桌面导航栏与移动端）显示的"在一起天数""纪念日倒计时""距离见面天数"来自配置文件 [public/anniversary.json](public/anniversary.json)。构建时该文件会原样复制到 `dist/anniversary.json`，前端运行时读取它，因此**改日期不需要重新编译**：
 
-```ts
-export const ANNIVERSARY_START = new Date(2026, 5, 9) // 在一起的起始日期（年, 月-1, 日）
-export const ANNIVERSARY_MONTH = 6 // 纪念日月份（真实在一起的月份）
-export const ANNIVERSARY_DAY = 9 // 纪念日日子（真实在一起的日子）
-export const MEETING_DATE = new Date(2026, 11, 31) // 距离见面的目标日期（年, 月-1, 日）
+```json
+{
+  "anniversaryStart": "2026-06-09",
+  "anniversaryMonth": 6,
+  "anniversaryDay": 9,
+  "meetingDate": "2026-11-14"
+}
 ```
 
 | 配置项 | 作用 | 显示位置 |
 | --- | --- | --- |
-| `ANNIVERSARY_START` | 在一起的起始日期，计算"在一起 X 天"（只显示总天数，不折算成年） | 桌面导航栏 / 移动端首页 |
-| `ANNIVERSARY_MONTH` / `ANNIVERSARY_DAY` | 每年的纪念日月日（与真实在一起的月日一致），计算"距离纪念日还有 X 天" | 同上 |
-| `MEETING_DATE` | 距离见面的目标日期，计算"距离见面还有 X 天"（日期已过则显示"已见面"） | 同上 |
+| `anniversaryStart` | 在一起的起始日期（`YYYY-MM-DD`），计算"在一起 X 天"（只显示总天数，不折算成年） | 桌面导航栏 / 移动端首页 |
+| `anniversaryMonth` / `anniversaryDay` | 每年的纪念日月日（与真实在一起的月日一致），计算"距离纪念日还有 X 天" | 同上 |
+| `meetingDate` | 距离见面的目标日期（`YYYY-MM-DD`），计算"距离见面还有 X 天"（日期已过则显示"已见面"） | 同上 |
 
-> ⚠️ `new Date()` 的月份从 0 开始：`new Date(2026, 5, 9)` 表示 2026 年 6 月 9 日，填其他月份记得减 1。改完需重新构建前端（`npm run build`）并上传 `dist`。
+**改日期的正确方式**：直接在服务器上编辑 `dist/anniversary.json`，保存后浏览器刷新即可生效，无需编译、无需重启。
+
+> ⚠️ 重新构建并上传 `dist` 时，会覆盖服务器上改过的 `anniversary.json`（恢复成 `public/anniversary.json` 里的值）。所以改日期时记得把本地 `public/anniversary.json` 同步成相同值，两边保持一致。
 
 ---
 
