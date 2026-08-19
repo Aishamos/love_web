@@ -36,15 +36,22 @@ def ensure_indexes():
 
 def clear_uploads(upload_dir):
     """清空上传目录中的图片文件（保留目录本身，不递归子目录）。"""
-    if not upload_dir or not os.path.isdir(upload_dir):
+    if not upload_dir:
+        print('  [跳过] 未配置 UPLOAD_FOLDER，未清空上传目录')
         return
+    if not os.path.isdir(upload_dir):
+        print(f'  [跳过] 上传目录不存在: {upload_dir}')
+        return
+    deleted = 0
     for name in os.listdir(upload_dir):
         path = os.path.join(upload_dir, name)
         if os.path.isfile(path):
             try:
                 os.remove(path)
-            except OSError:
-                pass
+                deleted += 1
+            except OSError as exc:
+                print(f'  [警告] 删除失败 {path}: {exc}')
+    print(f'  已清空上传目录 {upload_dir}：删除 {deleted} 个文件')
 
 
 def main():
