@@ -345,6 +345,22 @@ curl http://127.0.0.1:5000/api/hero         # 应返回图片信息
 
 ---
 
+## 设置 MySQL 远程连接
+
+如需用 Navicat / DataGrip 等图形化工具远程管理数据库，需要让 MySQL 监听所有网卡、授权远程用户、放行防火墙端口。项目提供了脚本 [setup_mysql_remote.sh](backend/setup_mysql_remote.sh) 一次性完成前两步并提示防火墙命令：
+
+```bash
+cd /var/www/love_web/backend
+sudo bash setup_mysql_remote.sh <远程来源IP|%> [数据库用户] [数据库名]
+# 例：sudo bash setup_mysql_remote.sh 1.2.3.4 love love_web
+```
+
+脚本会：把 `bind-address` 改为 `0.0.0.0` 并重启 MySQL；创建/更新远程用户并授权；最后提示防火墙放行命令。远程密码会在运行时交互输入，不写入脚本。
+
+> ⚠️ 用 `%` 表示允许任意主机，存在安全风险，建议填固定公网 IP。3306 端口仅对可信来源放行。
+
+---
+
 ## 备份建议
 
 照片和数据库是站点唯一资产，建议配置每日定时备份：
