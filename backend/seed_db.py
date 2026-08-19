@@ -1,4 +1,4 @@
-"""初始化数据库种子数据（示例相册；会清空照片与相册表，需显式确认）"""
+"""初始化数据库种子数据（示例相册；会清空照片/相册表及上传图片，需显式确认）"""
 import os
 import sys
 
@@ -34,10 +34,23 @@ def ensure_indexes():
     db.session.commit()
 
 
+def clear_uploads(upload_dir):
+    """清空上传目录中的图片文件（保留目录本身，不递归子目录）。"""
+    if not upload_dir or not os.path.isdir(upload_dir):
+        return
+    for name in os.listdir(upload_dir):
+        path = os.path.join(upload_dir, name)
+        if os.path.isfile(path):
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+
+
 def main():
     confirmed = '--yes' in sys.argv or os.environ.get('SEED_CONFIRM') == '1'
     if not confirmed:
-        print('⚠️  本脚本会清空 photos / albums 表并重建示例相册！')
+        print('⚠️  本脚本会清空 photos / albums 表、删除上传目录中的图片，并重建示例相册！')
         print('确认执行请使用: python seed_db.py --yes  （或设置环境变量 SEED_CONFIRM=1）')
         sys.exit(1)
 
@@ -51,6 +64,8 @@ def main():
 
         Photo.query.delete()
         Album.query.delete()
+
+        clear_uploads(app.config['UPLOAD_FOLDER'])
 
         albums = [
             Album(title='Japan', description='Tokyo · 2025.03'),

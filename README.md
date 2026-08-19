@@ -68,7 +68,7 @@ LOVE_web/
 │   │   ├── models/         # 数据模型
 │   │   └── utils/          # 图片处理 / 时间 / CSRF
 │   ├── migrations/         # 手动 SQL 迁移脚本
-│   ├── seed_db.py          # 初始化数据库种子数据（示例相册，需显式确认）
+│   ├── seed_db.py          # 初始化数据库种子数据（示例相册，清空照片/相册及上传图片）
 │   ├── init_admin.py       # 初始化/重置管理员账号密码（需显式确认）
 │   ├── wsgi.py             # gunicorn 入口
 │   └── requirements.txt
@@ -114,11 +114,11 @@ FLUSH PRIVILEGES;
 
 ```bash
 cd backend
-python seed_db.py --yes              # 初始化示例相册（清空照片与相册后重建）
+python seed_db.py --yes              # 初始化示例相册（清空照片/相册及上传图片后重建）
 ADMIN_PASSWORD=你的密码 python init_admin.py --yes   # 创建/重置管理员账号
 ```
 
-> ⚠️ `seed_db.py` 会**清空** photos / albums 两张表后重建示例相册；`init_admin.py` 只创建/重置账号，不影响照片与相册。两者都必须加 `--yes` 或设 `SEED_CONFIRM=1` 才会执行。
+> ⚠️ `seed_db.py` 会**清空** photos / albums 两张表、**删除上传目录中的图片**，再重建示例相册；`init_admin.py` 只创建/重置账号，不影响照片与相册。两者都必须加 `--yes` 或设 `SEED_CONFIRM=1` 才会执行。
 
 ---
 
