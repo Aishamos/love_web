@@ -143,6 +143,27 @@ openssl rand -hex 32
 
 ---
 
+## 纪念日与见面日期配置
+
+首页（桌面导航栏与移动端）显示的"在一起天数""纪念日倒计时""距离见面天数"来自前端配置文件 [src/data/anniversary.ts](src/data/anniversary.ts)，**上线前必须改成真实日期**（当前为占位值）：
+
+```ts
+export const ANNIVERSARY_START = new Date(2026, 5, 9) // 在一起的起始日期（年, 月-1, 日）
+export const ANNIVERSARY_MONTH = 6 // 纪念日月份（真实在一起的月份）
+export const ANNIVERSARY_DAY = 9 // 纪念日日子（真实在一起的日子）
+export const MEETING_DATE = new Date(2026, 11, 31) // 距离见面的目标日期（年, 月-1, 日）
+```
+
+| 配置项 | 作用 | 显示位置 |
+| --- | --- | --- |
+| `ANNIVERSARY_START` | 在一起的起始日期，计算"在一起 X 天"（只显示总天数，不折算成年） | 桌面导航栏 / 移动端首页 |
+| `ANNIVERSARY_MONTH` / `ANNIVERSARY_DAY` | 每年的纪念日月日（与真实在一起的月日一致），计算"距离纪念日还有 X 天" | 同上 |
+| `MEETING_DATE` | 距离见面的目标日期，计算"距离见面还有 X 天"（日期已过则显示"已见面"） | 同上 |
+
+> ⚠️ `new Date()` 的月份从 0 开始：`new Date(2026, 5, 9)` 表示 2026 年 6 月 9 日，填其他月份记得减 1。改完需重新构建前端（`npm run build`）并上传 `dist`。
+
+---
+
 ## 账户与密码说明
 
 本项目的"账户"只有两类，均无内置默认密码（开发默认值仅限本地，生产必须覆盖）：
